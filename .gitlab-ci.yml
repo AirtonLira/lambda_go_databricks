@@ -1,0 +1,20 @@
+stages:
+  - build
+  - deploy
+
+build-prod:
+  stage: build
+  image: golang:1.17-alpine3.13
+  script:
+  - export DATABRICKS_DOMAIN=$DATABRICKS_DOMAIN
+  - export DATABRICKS_TOKEN=$DATABRICKS_TOKEN
+  - go build -o ./cmd/main ./cmd/main.go 
+
+deploy-prod:
+  stage: deploy
+  image: hashicorp/terraform
+  script:
+  - export DATABRICKS_DOMAIN=$DATABRICKS_DOMAIN
+  - export DATABRICKS_TOKEN=$DATABRICKS_TOKEN
+  - cd ./infra ; terraform -v ; terraform init
+  - terraform apply --auto-approve
